@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: demonstration
+
+  datasource:
+    url: jdbc:postgresql://localhost:5433/employee_sys
+    username: postgres
+    password: user
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
