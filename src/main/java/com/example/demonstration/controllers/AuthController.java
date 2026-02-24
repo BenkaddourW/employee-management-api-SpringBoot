@@ -1,6 +1,7 @@
 package com.example.demonstration.controllers;
 
 
+import com.example.demonstration.dtos.LoginRequest;
 import com.example.demonstration.dtos.SignupRequest;
 import com.example.demonstration.services.AuthService;
 import com.example.demonstration.shared.GlobalResponse;
@@ -19,12 +20,18 @@ public class AuthController {
     @Autowired
     private AuthService authService;
 
-    @PostMapping("/singup")
+    @PostMapping("/signup")
     public ResponseEntity<GlobalResponse<String>> signup(@RequestBody SignupRequest signupRequest) {
 
-        authService.singup(signupRequest);
+        authService.signup(signupRequest);
         System.out.printf("signup request: %s", signupRequest.toString());
         return new ResponseEntity<>(new GlobalResponse<>("Signed up"), HttpStatus.CREATED);
     }
 
+    @PostMapping("/login")
+    public ResponseEntity<GlobalResponse<String>> login(@RequestBody LoginRequest loginRequest) {
+
+        String token = authService.login(loginRequest);
+        return new ResponseEntity<>(new GlobalResponse<>(token), HttpStatus.OK);
+    }
 }
