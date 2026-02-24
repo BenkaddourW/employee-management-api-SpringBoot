@@ -9,6 +9,7 @@ import com.example.demonstration.repositories.DepartmenRepo;
 import com.example.demonstration.repositories.EmployeeRepo;
 import com.example.demonstration.shared.CustomResponseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,7 +26,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private DepartmenRepo departmenRepo;
 
+
     @Override
+    @PreAuthorize("@securityUtils.isOwner(#employeeId)")
     public Employee findOne(UUID employeeId) {
         Employee employee = employeeRepo.findById(employeeId)
                 .orElseThrow(() -> CustomResponseException.ResourceNotFound(
@@ -71,6 +74,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 
     @Override
+    @PreAuthorize("@securityUtils.isOwner(#employeeId)")
     public Employee updateOne(UUID employeeId, EmployeeUpdate employee) {
         Employee existingEmployee = employeeRepo.findById(employeeId)
                 .orElseThrow(() -> CustomResponseException.ResourceNotFound(

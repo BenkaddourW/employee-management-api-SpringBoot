@@ -8,6 +8,7 @@ import com.example.demonstration.repositories.EmployeeRepo;
 import com.example.demonstration.repositories.LeaveRequestRepo;
 import com.example.demonstration.shared.CustomResponseException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class LeaveRequesteImp implements LeaveRequestService {
     }
 
     @Override
+    @PreAuthorize("@securityUtils.isOwner(#employeeId)")
     public LeaveRequest createOne(LeaveRequestCreate leaveRequestCreate, UUID employee_id) {
 
         Employee employee = employeeRepo.findById(employee_id)
@@ -46,6 +48,7 @@ public class LeaveRequesteImp implements LeaveRequestService {
     }
 
     @Override
+    @PreAuthorize("@securityUtils.isOwner(#employeeId)")
     public List<LeaveRequest> findAllByEmployeeId(UUID employee_id) {
 
 
