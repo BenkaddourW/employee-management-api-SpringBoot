@@ -1,6 +1,6 @@
 spring:
   application:
-    name: demonstration
+    name: Employee Management System
 
   datasource:
     url: jdbc:postgresql://localhost:5433/employee_sys
@@ -9,10 +9,30 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
+
+  sql:
+    init:
+      mode: always
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${GMAIL_APP_USERNAME}
+    password: ${GMAIL_APP_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 jwt:
   secret: c058f30f67ca4a471606dbf105bcb45c919f9eed87d363611b203c54f58dd503
+
+backend:
+  origin: http://localhost:5173

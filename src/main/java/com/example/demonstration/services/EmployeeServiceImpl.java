@@ -8,6 +8,7 @@ import com.example.demonstration.entities.Employee;
 import com.example.demonstration.repositories.DepartmenRepo;
 import com.example.demonstration.repositories.EmployeeRepo;
 import com.example.demonstration.shared.CustomResponseException;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,9 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private DepartmenRepo departmenRepo;
 
+    @Autowired
+    private EmailService emailService;
+
 
     @Override
     @PreAuthorize("@securityUtils.isOwner(#employeeId)")
@@ -43,6 +47,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeRepo.findAll();
     }
 
+    @Transactional
     @Override
     public Employee createOne(EmployeeCreate employeeCreate) {
         Employee employee = new Employee();
@@ -50,6 +55,12 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .orElseThrow(() -> CustomResponseException.ResourceNotFound(
                         "Employee with ID " + employeeCreate.departmentId() + " not found"
                 ));
+        String token = UUID.randomUUID().toString();
+
+
+        employee.setVerified(false);
+        employee.setAccountCreationToken(token);
+
         employee.setFirstName(employeeCreate.firstName());
         employee.setLasteName(employeeCreate.lasteName());
         employee.setEmail(employeeCreate.email());
@@ -59,6 +70,9 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setDepartment(department);
 //        employees.add(employee);
         employeeRepo.save(employee);
+
+        emailService.sendAccountCreationEmail(employee.getEmail(), token);
+
         return employee;
     }
 

@@ -31,12 +31,16 @@ public class AuthService {
     private PasswordEncoder passwordEncoder;
 
 
-    public void signup(SignupRequest signupRequest) {
+    public void signup(SignupRequest signupRequest, String token) {
 
-        Employee employee = employeeRepo.findById(signupRequest.employeeId())
+        Employee employee = employeeRepo.findOneByAccountCreationToken(token)
                 .orElseThrow(() -> CustomResponseException.ResourceNotFound(
-                        "Employee with ID " + signupRequest.employeeId() + " not found"
+                        "Invalid token"
                 ));
+
+        if (employee.isVerified()) {
+            throw CustomResponseException.BadRequest("Account already created");
+        }
         UserAccount account = new UserAccount();
 
 
@@ -44,6 +48,9 @@ public class AuthService {
         account.setPassword(passwordEncoder.encode(signupRequest.password()));
         account.setEmployee(employee);
         userAccountRepo.save(account);
+        employee.setVerified(true);
+        employee.setAccountCreationToken(null);
+        employeeRepo.save(employee);
 
 
     }
